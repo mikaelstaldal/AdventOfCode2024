@@ -1,0 +1,43 @@
+function parse_input(input: list<text>) {
+    val left = list<integer>();
+    val right = list<integer>();
+    for (line in input) {
+        left.add(integer(line.sub(0, line.index_of(" "))));
+        right.add(integer(line.sub(line.last_index_of(" ") + 1)));
+    }
+    return (left, right);
+}
+
+function day1a(input: list<text>) {
+    val (left, right) = parse_input(input);
+
+    left.sort();
+    right.sort();
+
+    var sum = 0;
+    for (i in range(input.size())) {
+        val distance = abs(left[i] - right[i]);
+        sum += distance;
+    }
+    print(sum);
+}
+
+function day1b(input: list<text>) {
+    val (left, right) = parse_input(input);
+
+    var sum = 0;
+    for (n in left) {
+        val times = right @ { $ == n } ( @sum 1 );
+        sum += n * times;
+    }
+    print(sum);
+}
+
+day1a([
+    "3   4",
+    "4   3",
+    "2   5",
+    "1   3",
+    "3   9",
+    "3   3",
+]);
