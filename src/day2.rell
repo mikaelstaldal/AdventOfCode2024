@@ -1,0 +1,43 @@
+function parse_input(input: list<text>): list<list<integer>> =
+    input @* {} ($.split(" ") @* {} (integer($)));
+
+function is_safe(report: list<integer>): boolean {
+    val increasing = report[1] > report[0];
+    for (i in range(1, report.size())) {
+        if (
+            (increasing and (report[i] <= report[i-1]))
+            or (not increasing and (report[i] >= report[i-1]))
+            or (abs(report[i] - report[i-1]) > 3)
+        ) return false;
+    }
+    return true;
+}
+
+function day2a(input: list<text>) {
+    val reports = parse_input(input);
+    print(reports @ { is_safe($) } (@sum 1));
+}
+
+function is_safe_with_dampener(report: list<integer>): boolean {
+    if (is_safe(report)) return true;
+    for (i in range(report.size())) {
+        val r = list(report);
+        r.remove_at(i);
+        if (is_safe(r)) return true;
+    }
+    return false;
+}
+
+function day2b(input: list<text>) {
+    val reports = parse_input(input);
+    print(reports @ { is_safe_with_dampener($) } (@sum 1));
+}
+
+day2b([
+"7 6 4 2 1",
+"1 2 7 8 9",
+"9 7 6 2 1",
+"1 3 2 4 5",
+"8 6 4 4 1",
+"1 3 6 7 9",
+]);
