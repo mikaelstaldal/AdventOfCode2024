@@ -1,0 +1,36 @@
+function day3a(input: text) {
+    var sum = 0;
+    for (i in range(input.size())) {
+        if (input.sub(i).matches("mul\\([0-9]+,[0-9]+\\).*")) {
+            val comma = input.index_of(",", i + 4);
+            sum += integer(input.sub(i + 4, comma)) * integer(input.sub(comma + 1, input.index_of(")", comma)));
+        }
+    }
+    print(sum);
+}
+
+function day3b(input: text) {
+    var enabled = true;
+    var sum = 0;
+    for (i in range(input.size())) {
+        if (input.sub(i).matches("do\\(\\).*")) {
+            enabled = true;
+        } else if (input.sub(i).matches("don't\\(\\).*")) {
+            enabled = false;
+        } else if (enabled and input.sub(i).matches("mul\\([0-9]+,[0-9]+\\).*")) {
+            val comma = input.index_of(",", i + 4);
+            sum += integer(input.sub(i + 4, comma)) * integer(input.sub(comma + 1, input.index_of(")", comma)));
+        }
+    }
+    print(sum);
+}
+
+/*
+day3a(
+     "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"
+);
+*/
+
+day3b(
+    "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
+);
