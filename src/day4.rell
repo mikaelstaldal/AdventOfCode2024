@@ -1,0 +1,64 @@
+function day4a(input: list<text>) {
+    val word = "XMAS";
+    val reversed_word = word.reversed();
+    val word_size = word.size();
+
+    var occurances = 0;
+    for (row in range(input.size())) {
+        for (col in range(input[row].size())) {
+            if (col <= input[row].size() - word_size) {
+                val part = input[row][col] + input[row][col + 1] + input[row][col + 2] + input[row][col + 3];
+                if (part == word) occurances++;
+                if (part == reversed_word) occurances++;
+            }
+            if (row <= input.size() - word_size) {
+                val part = input[row][col] + input[row + 1][col] + input[row + 2][col] + input[row + 3][col];
+                if (part == word) occurances++;
+                if (part == reversed_word) occurances++;
+            }
+            if ((row <= input.size() - word_size) and (col <= input[row].size() - word_size)) {
+                val part = input[row][col] + input[row + 1][col + 1] + input[row + 2][col + 2] + input[row + 3][col + 3];
+                if (part == word) occurances++;
+                if (part == reversed_word) occurances++;
+            }
+            if ((row <= input.size() - word_size) and (col >= word_size - 1)) {
+                val part = input[row][col] + input[row + 1][col - 1] + input[row + 2][col - 2] + input[row + 3][col - 3];
+                if (part == word) occurances++;
+                if (part == reversed_word) occurances++;
+            }
+        }
+    }
+    print(occurances);
+}
+
+function day4b(input: list<text>) {
+    var occurances = 0;
+    for (row in range(1, input.size() - 1)) {
+        for (col in range(1, input[row].size() - 1)) {
+            if (input[row][col] == "A") {
+                if (
+                    ((input[row - 1][col - 1] == "M" and input[row + 1][col + 1] == "S") or
+                     (input[row - 1][col - 1] == "S" and input[row + 1][col + 1] == "M"))
+                    and
+                    ((input[row - 1][col + 1] == "M" and input[row + 1][col - 1] == "S") or
+                     (input[row - 1][col + 1] == "S" and input[row + 1][col - 1] == "M"))
+                )
+                    occurances++;
+            }
+        }
+    }
+    print(occurances);
+}
+
+day4b([
+    "MMMSXXMASM",
+    "MSAMXMSMSA",
+    "AMXSXMAAMM",
+    "MSAMASMSMX",
+    "XMASAMXAMM",
+    "XXAMMXXAMA",
+    "SMSMSASXSS",
+    "SAXAMASAAA",
+    "MAMMMXMMMM",
+    "MXMXAXMASX",
+]);
