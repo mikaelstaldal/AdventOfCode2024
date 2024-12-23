@@ -42,7 +42,6 @@ function invalid_update(rules: list<(integer,integer)>, an_update: list<integer>
             }
         }
     }
-    if (corrected != an_update) print(an_update + " => " + corrected);
     return if (corrected != an_update) middle(corrected) else 0;
 }
 
