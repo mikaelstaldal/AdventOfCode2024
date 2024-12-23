@@ -1,0 +1,118 @@
+enum D { N, S, E, W }
+
+function find_start_pos(input: list<text>) {
+    for (row in range(input.size())) {
+        for (col in range(input[row].size())) {
+            if (input[row][col] == "^") {
+                return (r=row, c=col, direction=D.N);
+            }
+        }
+    }
+    return (r=-1, c=-1, direction=D.N);
+}
+
+function step(input: list<text>, obstacle: (r: integer, c: integer), current: (r: integer, c: integer, direction: D)): (r: integer, c: integer, direction: D)? {
+    when (current.direction) {
+        N -> {
+            if (current.r == 0) return null;
+            if (input[current.r-1][current.c] == "#" or (current.r-1 == obstacle.r and current.c == obstacle.c)) {
+                return step(input, obstacle, (r=current.r, c=current.c, direction=D.E));
+            } else {
+                return (r=current.r-1, c=current.c, direction=current.direction);
+            }
+        }
+        E -> {
+            if (current.c == input[current.r].size() - 1) return null;
+            if (input[current.r][current.c+1] == "#" or (current.r == obstacle.r and current.c+1 == obstacle.c)) {
+                return step(input, obstacle, (r=current.r, c=current.c, direction=D.S));
+            } else {
+                return (r=current.r, c=current.c+1, direction=current.direction);
+            }
+        }
+        S -> {
+            if (current.r == input.size() - 1) return null;
+            if (input[current.r+1][current.c] == "#" or (current.r+1 == obstacle.r and current.c == obstacle.c)) {
+                return step(input, obstacle, (r=current.r, c=current.c, direction=D.W));
+            } else {
+                return (r=current.r+1, c=current.c, direction=current.direction);
+            }
+        }
+        W -> {
+            if (current.c == 0) return null;
+            if (input[current.r][current.c - 1] == "#" or (current.r == obstacle.r and current.c-1 == obstacle.c)) {
+                return step(input, obstacle, (r=current.r, c=current.c, direction=D.N));
+            } else {
+                return (r=current.r, c=current.c-1, direction=current.direction);
+            }
+        }
+    }
+}
+
+function day6a(input: list<text>) {
+    val start_pos = find_start_pos(input);
+
+    val positions = set<(r:integer,c:integer)>();
+    var current = start_pos;
+    while (true) {
+        val next = step(input, (r=-1, c=-1), current);
+        if (next == null) {
+            break;
+        } else {
+            positions.add((r=next.r, c=next.c));
+            current = next;
+        }
+    }
+    print(positions.size());
+}
+
+function day6b(input: list<text>) {
+    val start_pos = find_start_pos(input);
+
+    val positions = set<(r:integer,c:integer)>();
+    var current = start_pos;
+    while (true) {
+        val next = step(input, (r=-1, c=-1), current);
+        if (next == null) {
+            break;
+        } else {
+            positions.add((r=next.r, c=next.c));
+            current = next;
+        }
+    }
+
+    var count = 0;
+    for (pos in positions) {
+        if (input[pos.r][pos.c] != "#" and not (pos.r == start_pos.r and pos.c == start_pos.c)) {
+            val positions2 = set<(r: integer, c: integer, direction: D)>();
+            current = start_pos;
+            while (true) {
+                val next = step(input, pos, current);
+                if (next == null) {
+                    break;
+                } else {
+                    if (next in positions2) {
+                        count++;
+                        break;
+                    } else {
+                        positions2.add(next);
+                        current = next;
+                    }
+                }
+            }
+        }
+    }
+    print(count);
+}
+
+day6b([
+    "....#.....",
+    ".........#",
+    "..........",
+    "..#.......",
+    ".......#..",
+    "..........",
+    ".#..^.....",
+    "........#.",
+    "#.........",
+    "......#...",
+]);
