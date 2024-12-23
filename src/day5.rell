@@ -1,0 +1,88 @@
+function parse_input(input: list<text>) {
+    val rules = list<(integer,integer)>();
+    val updates = list<list<integer>>();
+    var parsing_pages = false;
+    for (line in input) {
+        if (line.empty()) {
+            parsing_pages = true;
+        } else if (parsing_pages) {
+            updates.add(line.split(",") @* {} (integer($)));
+        } else {
+            val parts = line.split("|") @* {} (integer($));
+            rules.add((parts[0], parts[1]));
+        }
+    }
+    return (rules, updates);
+}
+
+function middle(l: list<integer>): integer = l[(l.size() - 1) / 2];
+
+function valid_update(rules: list<(integer,integer)>, an_update: list<integer>): integer {
+    for (i in range(1, an_update.size())) {
+        for ((first, second) in rules) {
+            if (second == an_update[i - 1] and first == an_update[i]) return 0;
+        }
+    }
+    return middle(an_update);
+}
+
+function invalid_update(rules: list<(integer,integer)>, an_update: list<integer>): integer {
+    var corrected = list(an_update);
+    var invalid = true;
+    while (invalid) {
+        invalid = false;
+        for (i in range(1, an_update.size())) {
+            for ((first, second) in rules) {
+                if (second == corrected[i - 1] and first == corrected[i]) {
+                    invalid = true;
+                    val page = corrected[i - 1];
+                    corrected[i - 1] = corrected[i];
+                    corrected[i] = page;
+                }
+            }
+        }
+    }
+    if (corrected != an_update) print(an_update + " => " + corrected);
+    return if (corrected != an_update) middle(corrected) else 0;
+}
+
+function day5a(input: list<text>) {
+    val (rules, updates) = parse_input(input);
+    print(updates @ {} (@sum valid_update(rules, $)));
+}
+
+function day5b(input: list<text>) {
+    val (rules, updates) = parse_input(input);
+    print(updates @ {} (@sum invalid_update(rules, $)));
+}
+
+day5b([
+    "47|53",
+    "97|13",
+    "97|61",
+    "97|47",
+    "75|29",
+    "61|13",
+    "75|53",
+    "29|13",
+    "97|29",
+    "53|29",
+    "61|53",
+    "97|53",
+    "61|29",
+    "47|13",
+    "75|47",
+    "97|75",
+    "47|61",
+    "75|61",
+    "47|29",
+    "75|13",
+    "53|13",
+    "",
+    "75,47,61,53,29",
+    "97,61,53,29,13",
+    "75,29,13",
+    "75,97,47,61,53",
+    "61,13,29",
+    "97,13,75,29,47",
+]);
