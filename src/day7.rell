@@ -1,0 +1,98 @@
+function parse_equation(text) {
+    val test_value = integer(text.sub(0, text.index_of(":")));
+    val numbers = text.sub(text.index_of(":") + 2).split(" ") @* {} (integer($));
+    return (test_value, numbers);
+}
+
+function apply(left: integer, op: integer, right: integer): integer {
+    when(op) {
+        0 -> return left + right;
+        1 -> return left * right;
+        2 -> return integer(left.to_text() + right.to_text());
+        else -> require(false, "Unknown op " + op);
+    }
+    return 0;
+}
+
+function eval(exp: list<integer>): integer {
+    var result = apply(exp[0], exp[1], exp[2]);
+    for (i in range(3, exp.size(), step = 2)) {
+        result = apply(result, exp[i], exp[i + 1]);
+    }
+    return result;
+}
+
+function concat1(left: list<integer>, right: list<integer>): list<integer> {
+    val result = list(left);
+    result.add_all(right);
+    return result;
+}
+
+function concat2(a: list<list<integer>>, b: list<list<integer>>, c: list<list<integer>>): list<list<integer>> {
+    val result = list(a);
+    result.add_all(b);
+    result.add_all(c);
+    return result;
+}
+
+function generate_candidates_a(numbers: list<integer>): list<list<integer>> {
+    return if (numbers.size() < 2)
+        [ numbers ]
+    else
+        concat2(
+            generate_candidates_a(numbers.sub(1)) @* {} (concat1([numbers[0], 0], $)),
+            generate_candidates_a(numbers.sub(1)) @* {} (concat1([numbers[0], 1], $)),
+            []
+        );
+}
+
+function generate_candidates_b(numbers: list<integer>): list<list<integer>> {
+    return if (numbers.size() < 2)
+        [ numbers ]
+    else
+        concat2(
+            generate_candidates_b(numbers.sub(1)) @* {} (concat1([numbers[0], 0], $)),
+            generate_candidates_b(numbers.sub(1)) @* {} (concat1([numbers[0], 1], $)),
+            generate_candidates_b(numbers.sub(1)) @* {} (concat1([numbers[0], 2], $))
+        );
+}
+
+function day7a(input: list<text>) {
+    val equations = input @* {} (parse_equation($));
+    var sum = 0;
+    for ((test_value, numbers) in equations) {
+        for (candidate in generate_candidates_a(numbers)) {
+            if (eval(candidate) == test_value) {
+                sum += test_value;
+                break;
+            }
+        }
+    }
+    print(sum);
+}
+
+function day7b(input: list<text>) {
+    val equations = input @* {} (parse_equation($));
+    var sum = 0;
+    for ((test_value, numbers) in equations) {
+        for (candidate in generate_candidates_b(numbers)) {
+            if (eval(candidate) == test_value) {
+                sum += test_value;
+                break;
+            }
+        }
+    }
+    print(sum);
+}
+
+day7b([
+    "190: 10 19",
+    "3267: 81 40 27",
+    "83: 17 5",
+    "156: 15 6",
+    "7290: 6 8 6 15",
+    "161011: 16 10 13",
+    "192: 17 8 14",
+    "21037: 9 7 18 13",
+    "292: 11 6 16 20",
+]);
